@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMASH & CHIPS Brasov</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+        nav { background: linear-gradient(135deg, #ff6b35, #f7931e); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        nav .logo { font-size: 1.8rem; font-weight: bold; color: white; }
+        .lang-toggle { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .cta-btn { background: #28a745; color: white; padding: 0.7rem 1.5rem; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .cta-btn:hover { background: #218838; }
+        .hero { background: linear-gradient(135deg, #ff6b35, #f7931e); color: white; padding: 4rem 2rem; text-align: center; }
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .category-filter { display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; flex-wrap: wrap; }
+        .filter-btn { padding: 0.7rem 1.5rem; border: 2px solid #ff6b35; background: white; color: #ff6b35; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .filter-btn.active { background: #ff6b35; color: white; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin: 3rem 0; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.1); }
+        .product-card:hover { transform: translateY(-10px); }
+        .product-image { width: 100%; height: 200px; background: linear-gradient(135deg, #ff6b35, #f7931e); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .product-info { padding: 1.5rem; }
+        .product-name { font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .product-price { color: #28a745; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
+        .product-card .cta-btn { width: 100%; text-align: center; }
+        footer { background: #333; color: white; padding: 2rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">🍔 SMASH & CHIPS</div>
+        <div style="display:flex;gap:1rem;align-items:center;">
+            <button class="lang-toggle" onclick="toggleLang()">EN / RO</button>
+            <a href="https://bolt.eu" class="cta-btn">Order Now</a>
+        </div>
+    </nav>
+    
+    <div class="hero">
+        <h1>SMASH & CHIPS Brasov</h1>
+        <p>Smash Burgers Autentici & Cartofi Crispи</p>
+    </div>
+    
+    <div class="container">
+        <div class="category-filter">
+            <button class="filter-btn active" onclick="filterCategory('all')">Toate</button>
+            <button class="filter-btn" onclick="filterCategory('burger')">🍔 Burgers</button>
+            <button class="filter-btn" onclick="filterCategory('bauturi')">🥤 Băuturi</button>
+            <button class="filter-btn" onclick="filterCategory('sos')">🌶️ Sos</button>
+            <button class="filter-btn" onclick="filterCategory('cartofi')">🍟 Cartofi</button>
+        </div>
+        <div class="products-grid" id="products"></div>
+    </div>
+    
+    <footer>
+        <p>© 2026 SMASH & CHIPS Brasov. ⭐ 4.69/5 Rating</p>
+    </footer>
+
+    <script>
+        let lang = 'ro';
+        const products = [
+            {name:'CLASSIC SMASHED',price:'35',category:'burger',emoji:'🍔'},
+            {name:'CLASSIC DOUBLE',price:'45',category:'burger',emoji:'🍔'},
+            {name:'IUTE-N GURA',price:'35',category:'burger',emoji:'🌶️'},
+            {name:'BBQ BACON',price:'38',category:'burger',emoji:'🥓'},
+            {name:'BBQ BACON DOUBLE',price:'49',category:'burger',emoji:'🥓'},
+            {name:'DOUBLE IUTE-N',price:'45',category:'burger',emoji:'🌶️'},
+            {name:'DOUBLE CHAMPIGNON',price:'48',category:'burger',emoji:'🍄'},
+            {name:'CHAMPIGNON BLUES',price:'37',category:'burger',emoji:'🍄'},
+            {name:'COCA COLA ZERO',price:'8',category:'bauturi',emoji:'🥤'},
+            {name:'URSUS 0.33L',price:'10',category:'bauturi',emoji:'🍺'},
+            {name:'APA DORNA 0.5L',price:'7',category:'bauturi',emoji:'💧'},
+            {name:'SOS BBQ CHIPOTLE',price:'7',category:'sos',emoji:'🌶️'},
+            {name:'SOS SRIRACHA HONEY',price:'7',category:'sos',emoji:'🍯'},
+            {name:'SOS BLUE CHEESE',price:'6',category:'sos',emoji:'🧀'},
+            {name:'CARTOFI',price:'12.99',category:'cartofi',emoji:'🍟'},
+            {name:'Cartofi cu bacon',price:'19.50',category:'cartofi',emoji:'🍟'},
+            {name:'Cartofi garlic',price:'17',category:'cartofi',emoji:'🍟'},
+            {name:'Cartofi prăjiti',price:'15',category:'cartofi',emoji:'🍟'}
+        ];
+        
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            render Products(cat);
+        }
+        
+        function renderProducts(category) {
+            const filtered = category === 'all' ? products : products.filter(p => p.category === category);
+            const html = filtered.map(p => `
+                <div class="product-card">
+                    <div class="product-image">${p.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">LEI ${p.price}</div>
+                        <a href="https://bolt.eu" class="cta-btn">Comandă</a>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('products').innerHTML = html;
+        }
+        
+        renderProducts('all');
+    </script>
+</body>
+</html>
